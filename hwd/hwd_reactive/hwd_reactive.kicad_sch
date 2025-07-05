@@ -1,0 +1,192 @@
+(kicad_sch
+	(version 20250114)
+	(generator "eeschema")
+	(generator_version "9.0")
+	(uuid "e1902c4a-c8d3-47e8-8764-2534e0bb1d7a")
+	(paper "A4")
+	(lib_symbols)
+	(text "Root (page 1)"
+		(exclude_from_sim no)
+		(at 31.75 18.415 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "bcd5f34a-ef80-40d1-bef6-591e126d915e")
+	)
+	(sheet
+		(at 145.415 27.94)
+		(size 47.625 38.1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "251e6f1a-d0e7-43b5-9ab3-0c223ac0f9a1")
+		(property "Sheetname" "mcu"
+			(at 145.415 27.2284 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "mcu.kicad_sch"
+			(at 145.415 66.6246 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "hwd_reactive"
+				(path "/e1902c4a-c8d3-47e8-8764-2534e0bb1d7a"
+					(page "4")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 83.185 27.305)
+		(size 45.72 38.1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "2d2419ef-eca4-4152-a4ca-42af1a3cafa1")
+		(property "Sheetname" "power_supply"
+			(at 83.185 26.5934 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "power.kicad_sch"
+			(at 83.185 65.9896 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "hwd_reactive"
+				(path "/e1902c4a-c8d3-47e8-8764-2534e0bb1d7a"
+					(page "3")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 202.565 27.305)
+		(size 46.99 38.1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "7192c99e-7ca5-41a4-821d-44a9c1b484f1")
+		(property "Sheetname" "output"
+			(at 202.565 26.5934 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "output.kicad_sch"
+			(at 202.565 65.9896 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "hwd_reactive"
+				(path "/e1902c4a-c8d3-47e8-8764-2534e0bb1d7a"
+					(page "5")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 21.59 28.575)
+		(size 45.085 36.195)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "dcec704e-a929-485c-b91e-4d2adc4c3536")
+		(property "Sheetname" "sensors"
+			(at 21.59 27.8634 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "sensors.kicad_sch"
+			(at 21.59 65.3546 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "hwd_reactive"
+				(path "/e1902c4a-c8d3-47e8-8764-2534e0bb1d7a"
+					(page "2")
+				)
+			)
+		)
+	)
+	(sheet_instances
+		(path "/"
+			(page "1")
+		)
+	)
+	(embedded_fonts no)
+)

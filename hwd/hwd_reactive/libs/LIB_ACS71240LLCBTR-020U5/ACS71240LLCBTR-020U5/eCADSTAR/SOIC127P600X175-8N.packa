@@ -1,0 +1,13 @@
+(unit MM)
+
+(package "ACS71240LLCBTR-020U5"
+    (type UNDEF)
+    (uver 2)
+    (cuser "SamacSys")
+    (uuser "SamacSys")
+    (utime 2024-01-05-10:58:00)
+    (mountForm default
+        (footprintRef "SOIC127P600X175-8N")
+        (spec "System")
+    )
+)

@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP ACS71240LLCBTR-020U5
+D Board Mount Current Sensors CURRENT SENSOR IC WITH COMMON MODE REJECTION AND OVERCURRENT FAULT
+K
+F https://www.mouser.de/datasheet/2/1115/ACS71240_Datasheet-3079675.pdf
+$ENDCMP
+#
+#End Doc Library

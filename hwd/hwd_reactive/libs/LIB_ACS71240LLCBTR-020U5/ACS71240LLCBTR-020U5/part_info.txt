@@ -1,0 +1,9 @@
+Manufacturer=Allegro Microsystems
+PartNumber=ACS71240LLCBTR-020U5
+PartCategory=Integrated Circuit
+PackageCategory=Small Outline Packages
+PinCount=8
+Version=1.1
+Released=2024-01-05 10:58:00
+Downloaded=2025-06-30 13:10:40
+3D=Y

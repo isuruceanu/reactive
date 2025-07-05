@@ -1,0 +1,11 @@
+FILE_TYPE = MULTI_PHYS_TABLE;
+
+PART 'ACS71240LLCBTR_020U5'
+CLASS = IC
+{========================================================================================}
+:"MANUFACTURER_NAME", "MANUFACTURER_PART_NUMBER"= "PART_NUMBER", "JEDEC_TYPE", "PACK_TYPE", "MOUSER_PART_NUMBER", "MOUSER_PRICE/STOCK", "DESCRIPTION", "DATASHEET", "HEIGHT";
+{========================================================================================}
+ "Allegro Microsystems", "ACS71240LLCBTR-020U5" (!) = "", "SOIC127P600X175-8N", "Small Outline Packages", "250-S71240LLCBTR020U", "https://www.mouser.co.uk/ProductDetail/Allegro-MicroSystems/ACS71240LLCBTR-020U5?qs=rQFj71Wb1eXatIJDjqEsyg%3D%3D", "Board Mount Current Sensors CURRENT SENSOR IC WITH COMMON MODE REJECTION AND OVERCURRENT FAULT", "https://www.mouser.de/datasheet/2/1115/ACS71240_Datasheet-3079675.pdf", "1.75 mm"
+END_PART
+
+END.
