@@ -1,6 +1,10 @@
 
 .DS_Store
 
+hwd/hwd_reactive/hwd_reactive-backups
+hwd/hwd_reactive/#auto_saved_files#
+hwd/hwd_reactive/_autosave-power.kicad_sch
+hwd/hwd_reactive/_autosave-sensors.kicad_sch
 # Prerequisites
 *.d
 
