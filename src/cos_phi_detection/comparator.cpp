@@ -32,7 +32,9 @@ void Comparator::resetValues() {
 
 ZeroCrossType Comparator::read() {
 
-  int prevState = (analogRead(_analogPin) > _threshold) ? 1 : 0;
+  int prevReading = analogRead(_analogPin);
+  int prevState = (prevReading > _threshold) ? 1 : 0;
+  Serial.print("PrevRead:"); Serial.println(prevReading);
   unsigned long startTime = millis();
   
   while (millis() - startTime < _timeoutMs) {
@@ -41,6 +43,7 @@ ZeroCrossType Comparator::read() {
 
     for (int i = 0; i < _samplesRequired; i++) {
       int val = analogRead(_analogPin);
+      Serial.print("CurrentRead["); Serial.print(i); Serial.print("]="); Serial.println(val);
       setValues(val);
       int currentState = (val > _threshold) ? 1 : 0;
 
@@ -51,7 +54,7 @@ ZeroCrossType Comparator::read() {
         stableCount = 1;
       }
 
-      delayMicroseconds(10);  // Small delay between samples
+      delayMicroseconds(100);  // Small delay between samples
     }
 
     if (stableCount >= _samplesRequired) {

@@ -19,7 +19,7 @@ bool ledState = LOW;
 volatile unsigned long lastInterruptTime = 0; // For debounce
 
 unsigned long timeoutMs = 20;
-int debounceSamples = 1;
+int debounceSamples = 3;
 
 bool outputState = true;
 
@@ -88,7 +88,7 @@ void setup() {
 
   Serial.begin(115200);
   Serial.println("Zero-cross test started.");
-  setupWeb();
+  //setupWeb();
 }
 
 
@@ -132,5 +132,5 @@ void loop() {
     zeroCrossDetector->resetValues();
   }
   delay(1);
-  server.handleClient();
+  //server.handleClient();
 }
