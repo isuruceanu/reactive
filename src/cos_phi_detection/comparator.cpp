@@ -1,70 +1,54 @@
 #include "comparator.h"
 
-Comparator::Comparator(uint8_t analogPin, int threshold, int samplesRequired, unsigned long timeoutMs) {
+Comparator::Comparator(uint8_t analogPin, int threshold, CallbackFunction cb, int samplesRequired) {
   _analogPin = analogPin;
   _threshold = threshold;
   _samplesRequired = samplesRequired;
-  _timeoutMs = timeoutMs;
+  _callback = cb;
 }
 
-int Comparator::getMaxVal() {
-  return maxVal;
-}
-
-int Comparator::getMinVal() {
-  return minVal;
-}
-
-void Comparator::setValues(int val) {
-  if (val > maxVal) {
-    maxVal = val;
-    return;
-  }
-  if (val < minVal) {
-    minVal = val;
-  }
-}
-
-void Comparator::resetValues() {
-  maxVal = 0;
-  minVal = 6000;
-}
-
-ZeroCrossType Comparator::read() {
-
+void Comparator::start() {
   int prevReading = analogRead(_analogPin);
-  int prevState = (prevReading > _threshold) ? 1 : 0;
-  Serial.print("PrevRead:"); Serial.println(prevReading);
-  unsigned long startTime = millis();
-  
-  while (millis() - startTime < _timeoutMs) {
-    int consistentState = 0;
-    int stableCount = 0;
+  _prevState = (prevReading > _threshold) ? 1 : 0;
+  _running = true;
 
-    for (int i = 0; i < _samplesRequired; i++) {
-      int val = analogRead(_analogPin);
-      Serial.print("CurrentRead["); Serial.print(i); Serial.print("]="); Serial.println(val);
-      setValues(val);
-      int currentState = (val > _threshold) ? 1 : 0;
+}
 
-      if (currentState == consistentState) {
-        stableCount++;
-      } else {
-        consistentState = currentState;
-        stableCount = 1;
-      }
+void Comparator::stop() {
+  _running = false;
+}
 
-      delayMicroseconds(100);  // Small delay between samples
+void Comparator::loop(bool stopOnFire) {
+
+  if (!_running) return;
+
+  int consistentState = 0;
+  int stableCount = 0;
+
+  for (int i = 0; i < _samplesRequired; i++) {
+    int val = analogRead(_analogPin);
+    int currentState = (val > _threshold) ? 1 : 0;
+
+    if (currentState == consistentState) {
+      stableCount++;
+    } else {
+      consistentState = currentState;
+      stableCount = 1;
     }
 
-    if (stableCount >= _samplesRequired) {
-      if (prevState == 0 && consistentState == 1) {
-        return ZC_RISING;
-      } else if (prevState == 1 && consistentState == 0) {
-        return ZC_FALLING;
-      }
-      prevState = consistentState;
+    //delayMicroseconds(1);  // Small delay between samples
+  }
+
+  if (stableCount >= _samplesRequired) {
+    if (_prevState == 0 && consistentState == 1) {
+      if (stopOnFire) stop();
+      _callback(ZC_RISING);
+      return;
+    } else if (_prevState == 1 && consistentState == 0) {
+      if (stopOnFire) stop();
+      _callback(ZC_FALLING);
+      return;
     }
-    return NO_CROSS;
+    _prevState = consistentState;
   }
 }

@@ -19,7 +19,7 @@ bool ledState = LOW;
 volatile unsigned long lastInterruptTime = 0; // For debounce
 
 unsigned long timeoutMs = 20;
-int debounceSamples = 3;
+int debounceSamples = 10;
 
 bool outputState = true;
 
@@ -68,11 +68,10 @@ void setupWeb() {
   Serial.println("HTTP server started");
 }
 
-void onZeroCross() {
-  outputState = !outputState;
-  lastInterruptTime = millis();
-  digitalWrite(outputPin, outputState);
-  Serial.println("Zero-cross event detected!");
+void onZeroCross(ZeroCrossType zc) {
+  bool statePin = zc == ZC_RISING;
+  zeroCrossDetector->start();
+  digitalWrite(outputPin, statePin);
 }
 
 
@@ -84,53 +83,24 @@ void setup() {
   pinMode(ledPin, OUTPUT);
   digitalWrite(ledPin, LOW);
   
-  zeroCrossDetector = new Comparator(zeroCrossPin, threshold, debounceSamples, timeoutMs);
+  zeroCrossDetector = new Comparator(zeroCrossPin, threshold, onZeroCross, timeoutMs);
 
   Serial.begin(115200);
   Serial.println("Zero-cross test started.");
   //setupWeb();
+  zeroCrossDetector->start();
 }
-
-
-void readZC() {
-  ZeroCrossType zc = zeroCrossDetector->read();
-  switch (zc) {
-    case ZC_RISING:
-      zc_state = "Zero crossing (rising)";
-      digitalWrite(outputPin, HIGH);
-      break;
-    case ZC_FALLING:
-      zc_state = "Zero crossing (falling)";
-      digitalWrite(outputPin, LOW);
-      break;
-    case NO_CROSS:
-      zc_state = "No crossing or timeout";
-      digitalWrite(outputPin, LOW);
-      break;
-  }
-  Serial.println(zc_state);
-}
-
 
 void loop() {
   
-  unsigned long currentMillis = millis();
+  // unsigned long currentMillis = millis();
 
-  if (currentMillis - previousMillis >= interval) {
-    previousMillis = currentMillis;
-    ledState = !ledState;
-    digitalWrite(ledPin, ledState);
-    readZC();
-   
-
-    minVal = zeroCrossDetector->getMinVal();
-    maxVal = zeroCrossDetector->getMaxVal();
+  // if (currentMillis - previousMillis >= interval) {
+  //   previousMillis = currentMillis;
+  //   ledState = !ledState;
+  //   digitalWrite(ledPin, ledState);
     
-    
-    Serial.print("MIN:"); Serial.println(minVal);
-    Serial.print("MAX:"); Serial.println(maxVal);
-    zeroCrossDetector->resetValues();
-  }
-  delay(1);
+  // }
+  zeroCrossDetector->loop();
   //server.handleClient();
 }

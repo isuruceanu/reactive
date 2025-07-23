@@ -11,25 +11,20 @@ enum ZeroCrossType {
 
 class Comparator {
   public:
-  
+    typedef void (*CallbackFunction)(ZeroCrossType);
 
-    Comparator(uint8_t analogPin, int threshold, int samplesRequired = 3, unsigned long timeoutMs = 20);
-
-    ZeroCrossType read();  // Call this from loop()
-    int getMinVal();
-    int getMaxVal();
-    void resetValues();
+    Comparator(uint8_t analogPin, int threshold, CallbackFunction cb, int samplesRequired = 3);
+    void start();
+    void loop(bool stopOnFire = false);  // Call this from loop()
+    void stop();
 
   private:
     uint8_t _analogPin;
     int _threshold;
     int _samplesRequired;
-    unsigned long _timeoutMs;
-
-    void setValues(int val);
-    
-    int minVal = 60000;
-    int maxVal = 0;
+    CallbackFunction _callback;
+    bool _running = false;
+    int _prevState = 0;
 };
 
 #endif
