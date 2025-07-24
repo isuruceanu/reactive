@@ -1,14 +1,7 @@
 #include <Arduino.h>
-#include <WiFi.h>
-#include <WebServer.h>
 #include "comparator.h"
 
-const char* ssid = "iWireless";
-const char* password = "Guacamole4you";
-
 Comparator* zeroCrossDetector;
-
-WebServer server(80);
 
 const int zeroCrossPin = 35;
 const int outputPin = 27;
@@ -19,60 +12,11 @@ bool ledState = LOW;
 volatile unsigned long lastInterruptTime = 0; // For debounce
 
 unsigned long timeoutMs = 20;
-int debounceSamples = 10;
+int debounceSamples = 2;
 
 bool outputState = true;
 
 const unsigned long interval = 500; // Blink every 500 ms
-unsigned long previousMillis = 0;
-int minVal = 0;
-int maxVal = 0;
-
-String zc_state = "No Crossing";
-
-
-void handleRoot() {
-  String html = "<!DOCTYPE html><html><head><meta charset='utf-8'><title>Power Factor</title></head><body>";
-  html += "<h1>ESP32 Power Factor Monitor</h1>";
-  html += "<p><strong>Min analog redings:</strong> ";
-  html += String(minVal);
-  html += "</p>";
-  html += "<p><strong>Max analog redings:</strong> ";
-  html += String(maxVal);
-   html += "<p><strong>State 0-cross:</strong> ";
-  html += zc_state;
-  html += "</p>";
-  html += "</body></html>";
-
-  server.send(200, "text/html", html);
-}
-
-void setupWeb() {
-  delay(100);
-
-  // Connect to Wi-Fi
-  Serial.println("Connecting to WiFi...");
-  WiFi.begin(ssid, password);
-
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-  Serial.println("");
-  Serial.print("WiFi connected. IP address: ");
-  Serial.println(WiFi.localIP());
-
-  // Start web server
-  server.on("/", handleRoot);
-  server.begin();
-  Serial.println("HTTP server started");
-}
-
-void onZeroCross(ZeroCrossType zc) {
-  bool statePin = zc == ZC_RISING;
-  zeroCrossDetector->start();
-  digitalWrite(outputPin, statePin);
-}
 
 
 void setup() {
@@ -83,13 +27,49 @@ void setup() {
   pinMode(ledPin, OUTPUT);
   digitalWrite(ledPin, LOW);
   
-  zeroCrossDetector = new Comparator(zeroCrossPin, threshold, onZeroCross, timeoutMs);
+  zeroCrossDetector = new Comparator(zeroCrossPin, threshold, timeoutMs);
 
   Serial.begin(115200);
   Serial.println("Zero-cross test started.");
-  //setupWeb();
-  zeroCrossDetector->start();
+   
 }
+
+ZeroCrossType detectZeroCrossD1(int _analogPin, int _threshold = 10,unsigned long timeoutMs=20, int _samplesRequired =2) {
+  
+  int prevState = (analogRead(_analogPin) > _threshold) ? 1 : 0;
+  unsigned long startTime = millis();
+
+  while (millis() - startTime < timeoutMs) {
+    int consistentState = 0;
+    int stableCount = 0;
+
+    for (int i = 0; i < _samplesRequired; i++) {
+      int val = analogRead(_analogPin);
+      int currentState = (val > _threshold) ? 1 : 0;
+
+      if (currentState == consistentState) {
+        stableCount++;
+      } else {
+        consistentState = currentState;
+        stableCount = 1;
+      }
+
+      delayMicroseconds(10);  // Small delay between samples
+    }
+
+    if (stableCount >= _samplesRequired) {
+      if (prevState == 0 && consistentState == 1) {
+        return ZC_RISING;
+      } else if (prevState == 1 && consistentState == 0) {
+        return ZC_FALLING;
+      }
+      prevState = consistentState;
+    }
+  }
+
+  return NO_CROSS;
+}
+
 
 void loop() {
   
@@ -101,6 +81,9 @@ void loop() {
   //   digitalWrite(ledPin, ledState);
     
   // }
-  zeroCrossDetector->loop();
-  //server.handleClient();
+  //zeroCrossDetector->loop();
+  
+  //ZeroCrossType zc = zeroCrossDetector-> detectZeroCross();
+  ZeroCrossType zc = detectZeroCrossD1(zeroCrossPin, threshold, timeoutMs);
+  digitalWrite(outputPin, zc == ZC_RISING);
 }
