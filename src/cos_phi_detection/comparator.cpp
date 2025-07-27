@@ -1,32 +1,23 @@
 #include "comparator.h"
+#include "const.h"
 
 Comparator::Comparator(uint8_t analogPin, int threshold, int samplesRequired, float frequencyHz) {
   _analogPin = analogPin;
-  _threshold = threshold;
   _samplesRequired = samplesRequired;
   _freq = frequencyHz;
-  updateSamplingDelay();
+  _threshold = threshold;
+
+  pinMode(_analogPin, INPUT_PULLDOWN);
 }
 
-void Comparator::setFrequency(float freqHz) {
-  _freq = freqHz;
-  updateSamplingDelay();
-}
-
-void Comparator::updateSamplingDelay() {
-  // For 50Hz, one period = 20ms => 10ms per half-cycle
-  // For accurate edge detection, we want multiple samples per half-cycle
-  // Let's aim for ~100 samples per half-cycle => 100µs per sample
-  float halfCycleTimeMs = 1000.0 / (2.0 * _freq); // in ms
-  _sampleDelayUs = static_cast<int>((halfCycleTimeMs * 1000.0) / 100.0); // ~100 samples per half-cycle
-  if (_sampleDelayUs < 10) _sampleDelayUs = 10; // minimum delay to prevent too tight loop
+void Comparator::setThreshold(int threshold) {
+  _threshold = threshold;
 }
 
 IRAM_ATTR ZeroCrossType Comparator::detect(unsigned long timeoutMs) {
   
   int prevState = (analogRead(_analogPin) > _threshold) ? 1 : 0;
   unsigned long startTime = millis();
-
   while (millis() - startTime < timeoutMs) {
     int consistentState = 0;
     int stableCount = 0;
@@ -42,7 +33,7 @@ IRAM_ATTR ZeroCrossType Comparator::detect(unsigned long timeoutMs) {
         stableCount = 1;
       }
 
-     delayMicroseconds(_sampleDelayUs);  // Small delay between samples
+     delayMicroseconds(10);  // Small delay between samples
     }
     portEXIT_CRITICAL(&_mux);
 
@@ -57,6 +48,18 @@ IRAM_ATTR ZeroCrossType Comparator::detect(unsigned long timeoutMs) {
   }
 
   return NO_CROSS;
+}
+
+int Comparator::calibrateZeroOffset(int samples) {
+  long sum = 0;
+
+  for (int i = 0; i < samples; i++) {
+    sum += analogRead(_analogPin);
+    delayMicroseconds(50);  // 20kHz sampling
+  }
+
+  float avgADC = sum / (float)samples;
+  return (int)avgADC;
 }
 
 

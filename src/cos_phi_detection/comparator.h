@@ -11,18 +11,18 @@ enum ZeroCrossType {
 
 class Comparator {
   public:
-    Comparator(uint8_t analogPin, int threshold, int samplesRequired = 3, float frequesncyHz = 50.0);
-    void setFrequency(float freqHz);
+    Comparator(uint8_t analogPin, int threshold, int samplesRequired = 2, float frequesncyHz = 50.0);
+    
+    void setThreshold(int threshold);
     IRAM_ATTR ZeroCrossType detect(unsigned long timeoutMs = 20);
-
-  private:
+    int calibrateZeroOffset(int samples = 1000);
+  protected:
     uint8_t _analogPin;
-    int _threshold;
-    int _samplesRequired;
     float _freq;
+    int _threshold;
+  private:
+    int _samplesRequired;
     portMUX_TYPE _mux = portMUX_INITIALIZER_UNLOCKED;
-    int _sampleDelayUs;
-    void updateSamplingDelay();
 };
 
 #endif
