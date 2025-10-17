@@ -6,8 +6,14 @@
 #define ACS_MV_PER_AMP  264
 #define FREQ            50
 
-#define VOLTAGE_ZC_PIN  26
+#define VOLT_THRESHOLD  2048
+#define AMP_THRESHOLD   2048
+
+#define VOLTAGE_ZC_PIN  13 // <-----------
 #define ACS725_PIN      14
+#define DAC_PIN_A       25
+#define DAC_PIN_B       26 // <-----------
+#define POT_PIN         34  // Potentiometer input
 
 #define SCL_PIN         22
 #define SDA_PIN         21

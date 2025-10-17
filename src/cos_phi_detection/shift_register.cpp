@@ -1,4 +1,5 @@
 #include "shift_register.h"
+#include "circular_shift.h"
 
 ShiftRegister::ShiftRegister(uint8_t dataPin, uint8_t clockPin, uint8_t latchPin, uint8_t ledCount)
   : _dataPin(dataPin), _clockPin(clockPin), _latchPin(latchPin), _ledCount(ledCount), _currentIndex(-1), _ledState(0) {}
@@ -37,6 +38,17 @@ void ShiftRegister::clearAll() {
   _currentIndex = -1;
   updateShiftRegister();
 }
+
+void ShiftRegister::on(SwitchOnOffStrategy *st) {
+  int idx = st->on();
+  set(idx, true);
+}
+
+void ShiftRegister::off(SwitchOnOffStrategy *st) {
+  int idx = st->off();
+  set(idx, false);
+}
+
 
 void ShiftRegister::set(uint8_t index, bool state) {
   if (index >= _ledCount) return;

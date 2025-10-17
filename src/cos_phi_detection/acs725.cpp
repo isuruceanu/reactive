@@ -2,7 +2,7 @@
 #include "const.h"
 
 Acs725::Acs725(uint8_t analogPin, int samplesRequired, float frequencyHz)
-  : Comparator(analogPin, samplesRequired, frequencyHz) {
+  : Comparator(analogPin, AMP_THRESHOLD, samplesRequired, frequencyHz) {
 }
 
 void Acs725::setup(void) {

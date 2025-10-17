@@ -2,6 +2,7 @@
 #define SHIFT_REGISTER_H
 
 #include <Arduino.h>
+#include "circular_shift.h"
 
 class ShiftRegister {
   public:
@@ -12,6 +13,8 @@ class ShiftRegister {
     void previous(bool turnOffCurrent = true);
     void set(uint8_t index, bool state);
     void clearAll();
+    void on(SwitchOnOffStrategy *st);
+    void off(SwitchOnOffStrategy *st);
 
   private:
     void updateShiftRegister();
