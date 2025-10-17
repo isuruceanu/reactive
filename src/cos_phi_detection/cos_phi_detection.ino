@@ -78,9 +78,6 @@ void setup() {
 
 
   Serial.println("Wave generator using hardware timer started.");
-
-  Serial.println("Sine wave generator started.");
-  
   
   circularStrategy = new CircularShift(8);
   pinMode(OUTPUT_PIN, OUTPUT);
@@ -111,22 +108,6 @@ void setup() {
 
 }
 
-float calculatePowerFactor(unsigned long voltageZC, unsigned long currentZC, float frequencyHz) {
-  const float periodSec = 1.0 / frequencyHz;
-
-  long deltaT_us = (long)(currentZC - voltageZC);  // time difference in microseconds (can be negative)
-  float deltaT_sec = deltaT_us / 1e6;              // convert to seconds
-
-  float phaseAngleRad = 2 * PI * frequencyHz * deltaT_sec;
-
-  // Optional: reject if phase shift exceeds ±90 degrees (π/2 radians)
-  if (fabs(phaseAngleRad) > PI / 2) return -1.0;  // invalid
-
-  float pf = cos(phaseAngleRad);
-  return fabs(pf);  // PF is always a positive magnitude
-}
-
-
 
 // check_tolerance - check if delta t and current is big/small enough to switch on/off capacitors
 bool check_tolerance(float current, unsigned long dt) {
@@ -151,56 +132,6 @@ float getPhaseShift() {
   return 0.0; // TODO: check this, why 0(zero) maybe return a stuct with error and value?
 }
 
-void run(float current) {
-  // When voltage cross detected on rising:
-  // start current timer and start detecting current cross
-  //    when current cross is detectd (rising or falling), stop timer and check the time interval
-  //    if the diffrence between voltage rissing corss and current cross is:
-  
-  ZeroCrossType volt_zc = voltageZC.detect();
-
-  if (volt_zc == ZC_RISING) { // detect voltage rising zero cross
-    
-    unsigned long volt_time = micros();
-    digitalWrite(OUTPUT_PIN, HIGH);
-    ZeroCrossType current_zc = acs725.detect(); // detect current cross
-       
-    if (current_zc != NO_CROSS) { // if current cross detected
-      unsigned long current_time = micros(); // read current time (when current cross detected)
-      auto dt = current_time - volt_time; // calculate time difference between current and volt corss detection
-      float period = 1e6 / FREQ; // µs per period
-      float phaseAngle = (dt / period) * 360.0; // degrees
-      digitalWrite(OUTPUT_PIN, LOW);
-      
-      Serial.print("dt = "); Serial.println(dt);
-      Serial.print("Phase angle: "); Serial.println(phaseAngle);
-      if (current_zc == ZC_RISING) Serial.println("↑");
-      if (current_zc == ZC_FALLING) Serial.println("↓");
-      // if (!check_tolerance(current, dt)) {
-
-      // }
-      
-      if (dt > 0 && dt < 5 && current_zc == ZC_RISING) { // if delta t is less 5 ms (1000 / 50 / 4 ) PI/2 and current is rising => inductive => switch on
-         Serial.println("ZC_RISING");
-      
-        // ledBar.on(circularStrategy);  
-        return;
-
-      } else if(dt >= 5 && dt < 10 && current_zc == ZC_FALLING) { // if delta t more 5 ms (exceeds 90 degree) and current is falling => capatitative => swtch off
-        Serial.println("ZC_RISING");
-        //ledBar.off(circularStrategy);
-        return;
-      }
-    } else {
-      Serial.println("Current cross not detected");
-      return;
-    }
-  }
-   // Serial.println("Voltage rising cross not detected");
-    return;
-}
-
-
 void loop() {
   static unsigned long lastPrint = 0;
   // read current in A, we need it anyway to display
@@ -211,10 +142,7 @@ void loop() {
   portENTER_CRITICAL(&timerMux);
   phaseOffset = (int)((phaseShift / (2.0 * PI)) * TABLE_SIZE);
   portEXIT_CRITICAL(&timerMux);
-
-  // float current = 0.0;
-  // current = acs725.readRMS();
-  
+ 
   // run  - calculate the delta t between voltage and current 
   float realAngle = getPhaseShift();
 
@@ -224,8 +152,11 @@ void loop() {
   if (millis() - lastPrint > 2000 && realAngle != 0.0) {
     float degrees = phaseShift * 180.0f / PI;
     float powerFactor = cos(phaseShift);
-    Serial.printf("Phase: %.2f°, PF: %.3f PhaseShift: %.3f \n", degrees, powerFactor, phaseShift);
-    Serial.printf("Real degree: %.2f°, AMPs: %.2f(A) \n", realAngle, current);
+
+
+    float rPF = cos(realAngle * PI/180.0);
+    Serial.printf("Phase: %.2f°, PF: %.2f \n", degrees, powerFactor);
+    Serial.printf("Real degree: %.2f°, PF: %.2f, AMPs: %.2f(A) \n", realAngle, rPF, current);
     lastPrint = millis();
   }
 
@@ -237,6 +168,6 @@ void loop() {
   // lcd.print(" A");
 
   
-  delay(2);
+  delay(1000);
 
 }

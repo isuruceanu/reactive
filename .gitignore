@@ -1,7 +1,7 @@
 
 .DS_Store
 
-src/build
+src/*/build 
 
 hwd/hwd_reactive/hwd_reactive-backups
 hwd/hwd_reactive/#auto_saved_files#
